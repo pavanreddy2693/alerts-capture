@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Alerts-Capture: Add Alert</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <link rel='stylesheet' href='../public/stylesheets/style.css'/>
+
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-sm">
+        <a href="/errors/all" style="font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; font-size: 40px;" class="nav-link">Alerts Capture</a>
+        <a href="/errors/all" class="nav-link active">All alerts</a>
+        <a href="/errors/summary" class="nav-link">Summary</a>
+        <a href="/add" class="nav-link">Add Alert</a>
+        
+        <a href="/users/logout" class="nav-link">logout</a>
+    </nav>
+    
+   
+  
+    <div style="width: 60%; margin: auto;" class="py-5">
+       <form action="/add" method="POST">
+        <div class="form-group">
+            <input type="text" name="alertname" placeholder="Alert Name" required class="form-control">
+        </div>
+        
+        <div class="form-group">
+            <select class="form-control" name="alerttype">
+                <option>type1</option>
+                <option>type2</option>
+                <option>type3</option>
+            </select>
+        </div>
+
+
+        <div class="form-group">
+          <textarea name="endpoint" placeholder="API Triggered"  class="form-control" rows="3"></textarea>
+      </div>
+      
+       
+        <div class="form-group">
+            <textarea name="dev_response" placeholder="Developer Response" class="form-control" rows="5"></textarea>
+            </div>
+
+           
+
+
+            <div class="form-group">
+              <label for="alertTriggeredOn" class="d-inline-block">Alert Triggered On</label>
+              <input type="date" class="form-control d-inline" name="alertTriggeredOn"/>
+            </div>
+
+            
+            <div class="form-group">
+            <input type="submit" value="Add Alert" class="btn btn-success"/>
+        </div>
+
+        </div>
+    </form>
+    </div>
+
+
+
+  </body>
+</html>
