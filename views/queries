@@ -1,0 +1,16 @@
+db.alerts.aggregate( [  { $match : { $and: [ {alerttype: 'type2'},{alertTriggeredOn: {$gte : '2020-12-18'}},{alertTriggeredOn: {$lte : '2020-12-18'}} ]}}, { $group: { alertname: "$alertname", alerttype : '$alerttype', dev_response : $dev_response' },myCount: { $sum: 1 } } }  ,{ $sort : { myCount : -1} } ] );
+
+
+
+db.alerts.aggregate( [    { $group: { _id: "$alerttype", alerttype : { $first: '$alertname' }, count: { $sum: 1 } } } ] )
+db.alerts.aggregate( [    { $group: { _id:{alertname:$alertname, alerttype: "$alerttype"}, count: { $sum: 1 } } } ] )
+$group: {_id:{username:$username, age:$ge}, 'count':{$sum:1} }  
+
+
+
+
+db.alerts.aggregate( [  { $match : { $and: [ {alerttype: type},{alertTriggeredOn: {$gte : datefrom}},{alertTriggeredOn: {$lte : dateto}} ]}},  { $group: { _id:{alertname:"$alertname", alerttype: "$alerttype"}, count: { $sum: 1 } } } ] );
+
+
+Limit
+db.alerts.find().sort({_id:-1}).limit(3);

@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Alerts-Capture: Alerts-Filtered</title>
+    <title>Alerts-Capture: All Alerts</title>
+   
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
   <link rel="stylesheet" href="/stylesheets/style.css"/>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/>
+
+
   </head>
   <body>
+
+
+
 
 
     <nav class="navbar navbar-expand-lg bg-secondary navbar-dark">
@@ -18,8 +23,8 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item"><a href="/add" class="nav-link">Add Alert</a></li>
-            <li class="nav-item"> <a href="/errors/all" class="nav-link active">View Alerts</a></li>
-            <li class="nav-item"> <a href="/errors/triggered" class="nav-link">5xx API</a></li>
+            <li class="nav-item"> <a href="/errors/all" class="nav-link ">View Alerts</a></li>
+            <li class="nav-item"> <a href="/errors/triggered" class="nav-link active">5xx API</a></li>
             
             <li> <a href="/users/logout" class="nav-link">logout</a></li>
           </ul>
@@ -27,28 +32,19 @@
       </div>
     </nav>
 
-    <% include ./partials/messages %>
+    
+
 
 
     
     <div style="align-items: center; font-size: 12px;" class="py-5">
-      <form action="/alerts/filter" method="GET" class="row form">
+      <form action="/api/filter" method="GET" class="row form">
         <div class="row">
-        <div class="d-inline-block col-sm-12 col-md-4 my-1">
+         
+            <div class="d-inline-block col-sm-12 col-md-4 my-1">
+                <input type="text" class="d-inline-block mx-2  my-1" placeholder="Alert Name" name="alertname"/>
+            </div>
 
-          <span class="text-info mx-2  my-1" style="font-size: medium;"><b>Filters :</b></span>
-         
-          <select name="type" style="height: 25px;" class="d-inline-block  my-1">
-          <option value="" selected>Alert Type</option>
-          <option value="type1">type1</option>
-          <option value="type2">type2</option>
-        
-        </select>
-       
-          <input type="text" class="d-inline-block mx-2  my-1" placeholder="Alert Name" name="alertname"/>
-        </div>
-    
-         
       <div class="d-inline col-sm-12 col-md-3  my-1">
         <span class="mx-2 d-inline-block  my-1">Date From</span>
           <input type="date" name="datefrom"  class="d-inline-block mx-2  my-1" style="height: 25px; width: 120px;"/>
@@ -61,38 +57,35 @@
     </div>
         
       <div class="d-inline col-sm-12 col-md-2  my-1">
-        <input type="submit" class="d-inline-block bg-info text-white btn btn-success my-1" value="Summarise"/>
+        <input type="submit" class="d-inline-block  btn btn-success my-1"value="Summarise"/>
     </div>
   </div>
     </form>
     </div>
    
+    
+   
 
-    <div>
-      <table class="table m-auto">
-        <thead>
-          <th style="width: 15%;">alert name</th>
-          <th style="width: 15%;">alert type</th>
-          <th style="width: 30%;">Dev Response</th>
-          <th style="width: 30%;">Count</th>
+      <table class="table table-striped table-light m-auto">
+        <thead class="thead-dark">
+        
+          <th scope="col">Alert Name</th>
+          <th scope="col">End Points</th>
+          <th scope="col">Dev Response</th>
+          <th scope="col">Count</th>
           
-          
-          
-
         </thead>
         <tbody>
-          <tbody>
-
-            <% filterbydate.forEach((filterbyd) => { %>
-              <tr>
-              <td style="width: 15%;"><%= filterbyd._id.alertname %></td>
-              <td style="width: 15%;"><%= filterbyd._id.alerttype %></td>
-              <td style="width: 30%;"><%= filterbyd._id.dev_response %></td>
-              <td style="width: 40%;"><%= filterbyd.count %></td>
-             
-            </tr>
-            <% });%>
-              </tbody>
+      <% alerts.forEach((alert) => { %>
+        <tr>
+        <td style="width: 15%;"><%= alert._id.alertname %></td>
+        <td style="width: 30%; white-space: pre-line;"><%= alert._id.endpoint %></td>
+        <td style="width: 70%;"><%= alert._id.dev_response %></td>
+        <td style="width: 70%;"><%= alert.count %></td>
+        
+        
+      </tr>
+      <% });%>
         </tbody>
       </table>
 

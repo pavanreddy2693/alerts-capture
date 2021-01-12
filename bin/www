@@ -8,6 +8,9 @@ var app = require('../app');
 var debug = require('debug')('alerts-capture:server');
 var http = require('http');
 
+
+var flash = require('connect-flash');
+
 /**
  * Get port from environment and store in Express.
  */
