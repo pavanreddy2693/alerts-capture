@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Alerts-Capture: All Alerts</title>
+   
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+  <link rel="stylesheet" href="/stylesheets/style.css"/>
+  <style>
+    .nav-link,.navbar-brand{
+      color:white;
+    }
+    .nav-link:hover,.navbar-brand:hover{
+      color:white;
+    }
+    .text-teal{
+      color: teal;
+    }
+    .bg-teal{
+      background-color: teal;
+      color: white;
+    }
+    .btn:hover{
+      background-color: white;
+      color: teal;
+      box-shadow: 0 0 10px teal;
+    }
+   .navbar{
+    background-color:teal;
+   }
+   .navbar:hover{
+     background-color: teal;
+     color:black;
+   }
+  
+
+  </style>
+
+  </head>
+  
+  <body>
+
+
+
+
+
+    <nav class="navbar navbar-expand-lg">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/errors/all">Alerts Capture</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item"><a href="/add" class="nav-link">Add Alert</a></li>
+            <li class="nav-item"> <a href="/errors/all" class="nav-link ">View Alerts</a></li>
+            <li class="nav-item"> <a href="/errors/triggered" class="nav-link active">5xx API</a></li>
+            
+            <li> <a href="/users/logout" class="nav-link">logout</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    
+
+
+
+    
+    <div style="align-items: center; font-size: 12px;" class="py-5">
+      <form action="/api/filter" method="GET" class="row form">
+        <div class="row">
+         
+            <div class="d-inline-block col-sm-12 col-md-4 my-1">
+                <input type="text" class="d-inline-block mx-2  my-1" placeholder="Alert Name" name="alertname"/>
+            </div>
+
+      <div class="d-inline col-sm-12 col-md-3  my-1">
+        <span class="mx-2 d-inline-block  my-1">Date From</span>
+          <input type="date" name="datefrom"  class="d-inline-block mx-2  my-1" style="height: 25px; width: 120px;"/>
+      </div>
+
+      
+      <div class="d-inline col-sm-12 col-md-3  my-1">
+        <span class="mx-2  my-1">Date To</span>
+        <input type="date" name="dateto" class="d-inline-block mx-2  my-1" style="height: 25px; width: 120px;"/>
+    </div>
+        
+      <div class="d-inline col-sm-12 col-md-2  my-1">
+        <input type="submit" class="d-inline-block  btn bg-teal my-1"value="Summarise"/>
+    </div>
+  </div>
+    </form>
+    </div>
+   
+    
+   
+
+      <table class="table table-striped m-auto">
+        <thead class="bg-teal">
+        
+          <th scope="col">Alert Name</th>
+          <th scope="col">End Points</th>
+          <th scope="col">Dev Response</th>
+          <th scope="col">Count</th>
+          
+        </thead>
+        <tbody>
+      <% alerts.forEach((alert) => { %>
+        <tr>
+        <td style="width: 15%;"><%= alert._id.alertname %></td>
+        <td style="width: 30%; white-space: pre-line;"><%= alert._id.endpoint %></td>
+        <td style="width: 70%;"><%= alert._id.dev_response %></td>
+        <td style="width: 70%;"><%= alert.count %></td>
+        
+        
+      </tr>
+      <% });%>
+        </tbody>
+      </table>
+
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+
+  </body>
+</html>

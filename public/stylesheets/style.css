@@ -2,3 +2,20 @@
     color: white;
     background-color: yellow;
 }
+
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    background-color: black;
+    width: 100%;
+  }
+  
+  tr:nth-child(even) {
+    background-color:black;
+  }
+
+
+
+   .nav-link,.navbar-brand{
+      color:teal;
+    }
