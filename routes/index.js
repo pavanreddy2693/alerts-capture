@@ -6,7 +6,6 @@ var session = require('express-session');
 const bcrypt = require('bcryptjs');
 var ObjectId = require('mongodb').ObjectID;
 var cookieParser = require('cookie-parser');
-var flash = require('connect-flash');
 var flash = require('express-flash');
 
 
@@ -58,6 +57,7 @@ MongoClient.connect(url, function(err, db) {
 var editid;
 
 router.get('/edit-alert',ensureAuthenticated,function(req, res, next) {
+  console.log('testing nodemon');
 
 editid=req.query.id;
 console.log(editid);
@@ -124,9 +124,10 @@ router.post('/edit-alert',  function(req, res, next) {
       alertTriggeredOn: alertTriggeredOn,
       dev_response: dev_response,
       responded_by:responded_by,
-      endpoint: endpoint
+      foendpoint: endpoint
     };
     var ObjectId = require('mongodb').ObjectID;
+   
    
     dbo.collection("alerts").find({"_id" : ObjectId(editid)}).toArray(function(err, updatealerts) {
       if (err) throw err;
@@ -138,11 +139,18 @@ router.post('/edit-alert',  function(req, res, next) {
     if (err) throw err;
     console.log("1 document updated");
     console.log(res.result.nModified + " document(s) updated");
-    db.close();
+    
     
     });
+
+    dbo.collection("alerts").find({}).sort({_id:-1}).limit(100).toArray(function(err, alerts) {
+      if (err){
+        errors.push(err);
+      }
+      console.log(alerts);
+      res.render('all-errors',{alerts:alerts});
+    });
   });
-  res.render('add');
 }
 });
 
@@ -168,16 +176,18 @@ router.get('/delete',  function(req, res, next) {
     if (err) throw err;
     console.log('record removed');
     var session = require('express-session');
+    dbo.collection("alerts").find({}).sort({_id:-1}).limit(100).toArray(function(err, alerts) {
+      if (err){
+        errors.push(err);
+      }
+      console.log(alerts);
+      res.render('all-errors',{alerts:alerts});
+    });
+    
   });
       
       
-      dbo.collection("alerts").find({}).sort({_id:-1}).limit(100).toArray(function(err, alerts) {
-        if (err){
-          errors.push(err);
-        }
-        console.log(alerts);
-        res.render('all-errors',{alerts:alerts});
-      });
+     
   });
   }); 
 
@@ -197,8 +207,9 @@ MongoClient.connect(url, function(err, db) {
   if (err) throw err;
   var dbo = db.db("alerts-capture");
   
+  dbo.collection("alerts").aggregate([ { $match :{alerttype: "5xx"}},
+    { $group: { _id:{alertname:"$alertname",dev_response: "$dev_response",endpoint:"$endpoint"}, count: { $sum: 1 } } }]).sort({count:-1,_id:-1}).toArray(function(err, alerts) {
   
-  dbo.collection("alerts").aggregate([{ $group: { _id:{alertname:"$alertname", alerttype: "$alerttype",dev_response: "$dev_response" , endpoint:"$endpoint"}, count: { $sum: 1 } } }]).sort({count:-1,_id:-1}).toArray(function(err, alerts) {
     if (err) throw err;
     console.log(alerts);
     
@@ -231,7 +242,9 @@ MongoClient.connect(url, function(err, db) {
   var dbo = db.db("alerts-capture");
   
   
-  dbo.collection("alerts").aggregate([ { $match : { $and: [{alertTriggeredOn: {$gte : datefrom}},{alertTriggeredOn: {$lte : dateto}},{alertname: {$eq:name}}]}},{ $group: { _id:{alertname:"$alertname", alerttype: "$alerttype",dev_response: "$dev_response" , endpoint:"$endpoint"}, count: { $sum: 1 } } }]).sort({count:-1,_id:-1}).toArray(function(err, alerts) {
+  dbo.collection("alerts").aggregate([ { $match :{ $and:[{alerttype: "5xx"},{alertTriggeredOn: {$lte : dateto}},{alertname: {$eq:name}}, {alertTriggeredOn: {$gte : datefrom}}]}},
+    { $group: { _id:{alertname:"$alertname",dev_response: "$dev_response",endpoint:"$endpoint"}, count: { $sum: 1 } } }]).sort({count:-1,_id:-1}).toArray(function(err, alerts) {
+  
     if (err) throw err;
     console.log(alerts);
     res.render('api',{alerts:alerts});
@@ -250,7 +263,7 @@ else if(datefrom!=''&& dateto=='' && name==''){
     var dbo = db.db("alerts-capture");
     
     
-    dbo.collection("alerts").aggregate([ { $match : {alertTriggeredOn: {$gte : datefrom}}},{ $group: { _id:{alertname:"$alertname", alerttype: "$alerttype",dev_response: "$dev_response" , endpoint:"$endpoint"}, count: { $sum: 1 } } }]).sort({count:-1,_id:-1}).toArray(function(err, alerts) {
+    dbo.collection("alerts").aggregate([ { $match :{ $and:[{alerttype: "5xx"}, {alertTriggeredOn: {$gte : datefrom}}]}},{ $group: { _id:{alertname:"$alertname", alerttype: "$alerttype",dev_response: "$dev_response" , endpoint:"$endpoint"}, count: { $sum: 1 } } }]).sort({count:-1,_id:-1}).toArray(function(err, alerts) {
       if (err) throw err;
       console.log(alerts);
       res.render('api',{alerts:alerts});
@@ -271,7 +284,7 @@ else if(datefrom!=''&& dateto!='' && name==''){
     var dbo = db.db("alerts-capture");
     
     
-    dbo.collection("alerts").aggregate([ { $match :{ $and:[ {alertTriggeredOn: {$gte : datefrom}},{alertTriggeredOn: {$lte : dateto}}]}},{ $group: { _id:{alertname:"$alertname", alerttype: "$alerttype",dev_response: "$dev_response" , endpoint:"$endpoint"}, count: { $sum: 1 } } }]).sort({count:-1,_id:-1}).toArray(function(err, alerts) {
+    dbo.collection("alerts").aggregate([ { $match :{ $and:[ {alerttype: "5xx"},{alertTriggeredOn: {$gte : datefrom}},{alertTriggeredOn: {$lte : dateto}}]}},{ $group: { _id:{alertname:"$alertname", alerttype: "$alerttype",dev_response: "$dev_response" , endpoint:"$endpoint"}, count: { $sum: 1 } } }]).sort({count:-1,_id:-1}).toArray(function(err, alerts) {
       if (err) throw err;
       console.log(alerts);
       res.render('api',{alerts:alerts});
@@ -293,7 +306,7 @@ else if(datefrom!=''&& dateto=='' && name!=''){
     var dbo = db.db("alerts-capture");
     
     
-    dbo.collection("alerts").aggregate([ { $match :{ $and:[ {alertTriggeredOn: {$gte : datefrom}},{alertname: {$eq:name}}]}},{ $group: { _id:{alertname:"$alertname", alerttype: "$alerttype",dev_response: "$dev_response" , endpoint:"$endpoint"}, count: { $sum: 1 } } }]).sort({count:-1,_id:-1}).toArray(function(err, alerts) {
+    dbo.collection("alerts").aggregate([ { $match :{ $and:[{alerttype: "5xx"}, {alertTriggeredOn: {$gte : datefrom}},{alertname: {$eq:name}}]}},{ $group: { _id:{alertname:"$alertname", alerttype: "$alerttype",dev_response: "$dev_response" , endpoint:"$endpoint"}, count: { $sum: 1 } } }]).sort({count:-1,_id:-1}).toArray(function(err, alerts) {
       if (err) throw err;
       console.log(alerts);
       res.render('api',{alerts:alerts});
@@ -315,7 +328,7 @@ else if(datefrom==''&& dateto!='' && name!=''){
     var dbo = db.db("alerts-capture");
     
     
-    dbo.collection("alerts").aggregate([ { $match :{ $and:[{alertTriggeredOn: {$gte : dateto}},{alertname: {$eq:name}}]}},{ $group: { _id:{alertname:"$alertname", alerttype: "$alerttype",dev_response: "$dev_response" , endpoint:"$endpoint"}, count: { $sum: 1 } } }]).sort({count:-1,_id:-1}).toArray(function(err, alerts) {
+    dbo.collection("alerts").aggregate([ { $match :{ $and:[{alertTriggeredOn: {$gte : dateto}},{alerttype: "5xx"},{alertname: {$eq:name}}]}},{ $group: { _id:{alertname:"$alertname", alerttype: "$alerttype",dev_response: "$dev_response" , endpoint:"$endpoint"}, count: { $sum: 1 } } }]).sort({count:-1,_id:-1}).toArray(function(err, alerts) {
       if (err) throw err;
       console.log(alerts);
       res.render('api',{alerts:alerts});
@@ -337,7 +350,7 @@ else if(datefrom==''&& dateto=='' && name!=''){
     var dbo = db.db("alerts-capture");
     
     
-    dbo.collection("alerts").aggregate([ { $match : {alertname: {$eq:name}}},{ $group: { _id:{alertname:"$alertname", alerttype: "$alerttype",dev_response: "$dev_response" , endpoint:"$endpoint"}, count: { $sum: 1 } } }]).sort({count:-1,_id:-1}).toArray(function(err, alerts) {
+    dbo.collection("alerts").aggregate([ { $match :{ $and:[{alerttype: "5xx"},{alertname: {$eq:name}}]}},{ $group: { _id:{alertname:"$alertname", alerttype: "$alerttype",dev_response: "$dev_response" , endpoint:"$endpoint"}, count: { $sum: 1 } } }]).sort({count:-1,_id:-1}).toArray(function(err, alerts) {
       if (err) throw err;
       console.log(alerts);
       res.render('api',{alerts:alerts});
@@ -361,7 +374,7 @@ else if(datefrom==''&& dateto!='' && name==''){
     var dbo = db.db("alerts-capture");
     
     
-    dbo.collection("alerts").aggregate([ { $match: {alertTriggeredOn: {$lte : dateto}}},{ $group: { _id:{alertname:"$alertname", alerttype: "$alerttype",dev_response: "$dev_response" , endpoint:"$endpoint"}, count: { $sum: 1 } } }]).sort({count:-1,_id:-1}).toArray(function(err, alerts) {
+    dbo.collection("alerts").aggregate([ { $match:{ $and:[{alerttype: "5xx"}, {alertTriggeredOn: {$lte : dateto}}]}},{ $group: { _id:{alertname:"$alertname", alerttype: "$alerttype",dev_response: "$dev_response" , endpoint:"$endpoint"}, count: { $sum: 1 } } }]).sort({count:-1,_id:-1}).toArray(function(err, alerts) {
       if (err) throw err;
       console.log(alerts);
       res.render('api',{alerts:alerts});
@@ -381,7 +394,7 @@ else if(datefrom==''&& dateto=='' && name==''){
     var dbo = db.db("alerts-capture");
     
     
-    dbo.collection("alerts").aggregate([{ $group: { _id:{alertname:"$alertname", alerttype: "$alerttype",dev_response: "$dev_response" , endpoint:"$endpoint"}, count: { $sum: 1 } } }]).sort({count:-1,_id:-1}).toArray(function(err, alerts) {
+    dbo.collection("alerts").aggregate([{ $match:{alerttype: "5xx"}},{ $group: { _id:{alertname:"$alertname", alerttype: "$alerttype",dev_response: "$dev_response" , endpoint:"$endpoint"}, count: { $sum: 1 } } }]).sort({count:-1,_id:-1}).toArray(function(err, alerts) {
       if (err) throw err;
       console.log(alerts);
       res.render('api',{alerts:alerts});
@@ -480,7 +493,7 @@ router.post('/add',  function(req, res, next) {
     });
 
   });
- 
+  req.flash('success_msg', 'Alert added successfully');
   res.render('add');
 }
 });
@@ -661,7 +674,7 @@ else if(type=='' && datefrom=='' && dateto!='' && name=='')
 /*1111*/
 else if(type=='' && datefrom=='' && dateto=='' && name=='')
 {
-  console.log('entered elseif');
+  console.log('entered right');
   var MongoClient = require('mongodb').MongoClient;
     var url = "mongodb://localhost:27017/";
 
@@ -791,7 +804,7 @@ else if(type!='' && datefrom=='' && dateto=='' && name!='')
 /*0111*/
 else if(type!='' && datefrom=='' && dateto=='' && name=='')
 {
-  console.log('entered elseif');
+  console.log('entered right');
   
   var MongoClient = require('mongodb').MongoClient;
     var url = "mongodb://localhost:27017/";

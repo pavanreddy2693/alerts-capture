@@ -10,12 +10,12 @@ table {
     width: 100%;
   }
   
-  td, th {
-    border: 1px black;
-    text-align: left;
-    padding: 8px;
-  }
-  
   tr:nth-child(even) {
     background-color:black;
   }
+
+
+
+   .nav-link,.navbar-brand{
+      color:teal;
+    }
